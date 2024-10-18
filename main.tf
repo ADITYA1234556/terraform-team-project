@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -e #any problem from the commands below, script exits
 
 terraform init
 terraform fmt
