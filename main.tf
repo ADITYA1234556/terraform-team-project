@@ -1,20 +1,12 @@
-terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "5.54.1"
-    }
-  }
-}
 #Get the default VPC in eu-west-2
 data "aws_vpc" "default" {
   default = true
 }
 
-#Get the subnets in the default VPC
+#Get the subnets in the default VPC based on tag name = vpc-id
 data "aws_subnets" "mypubsub" {
   filter {
-    name = "sub-id"
+    name = "vpc-id"
     values = [data.aws_vpc.default.id]
   }
 }
@@ -69,13 +61,7 @@ data "aws_autoscaling_group" "asgips" {
   name = aws_autoscaling_group.tf-asg.name
 }
 
-output "pubsub1id" {
-  value = data.aws_subnets.pub_sub_1.id
-}
 
-output "pubsub2id" {
-  value = data.aws_subnets.pub_sub_2.id
-}
 
 # output "instance_public_ips" {
 #   value = [
