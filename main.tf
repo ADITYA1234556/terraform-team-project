@@ -12,14 +12,14 @@ data "aws_subnets" "mypubsub" {
 }
 
 #Get the first public subnet in the Default VPC for ASG
-data "aws_subnets" "pub_sub_1" {
-  id = data.aws_subnets.mypubsub.ids[0]
-}
+# data "aws_subnets" "pub_sub_1" {
+#   id = data.aws_subnets.mypubsub.ids[0]
+# }
 
 #Get the second public subnet in the Default VPC for ASG
-data "aws_subnets" "pub_sub_2" {
-  id = data.aws_subnets.mypubsub.ids[1]
-}
+# data "aws_subnets" "pub_sub_2" {
+#   id = data.aws_subnets.mypubsub.ids[1]
+# }
 
 #Create Launch Template for ASG
 resource "aws_launch_template" "tflaunchtemp" {
@@ -28,7 +28,7 @@ resource "aws_launch_template" "tflaunchtemp" {
   instance_type = "t3.micro"
   network_interfaces {
     associate_public_ip_address = true
-    vpc_security_group_ids = var.SGID
+    security_groups = var.SGID
   }
   block_device_mappings {
     device_name = "/dev/sda1"
