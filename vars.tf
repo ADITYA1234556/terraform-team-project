@@ -18,5 +18,7 @@ variable "AMI" {
 }
 
 variable "SGID" {
-  default = "sg-0761e67d589b6b1c5"
+  description = "Security group ID"
+  type = list(string)
+  default = ["sg-0761e67d589b6b1c5"]
 }
