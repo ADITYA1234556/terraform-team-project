@@ -12,7 +12,11 @@ variable "NAME" {
 variable "AMI" {
   type = map(string)
   default = {
-    ubuntu22 = ""
-    linux = ""
+    ubuntu22 = "ami-03ceeb33c1e4abcd1"
+    linux = "ami-03c6b308140d10488"
   }
+}
+
+variable "SGID" {
+  default = "sg-0761e67d589b6b1c5"
 }
