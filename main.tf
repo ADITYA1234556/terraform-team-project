@@ -51,11 +51,3 @@ data "aws_autoscaling_group" "asgips" {
   name = aws_autoscaling_group.tf-asg.name
 }
 
-
-
-
-# output "instance_public_ips" {
-#   value = [
-#   for instance in data.aws_autoscaling_group.asgips.instances : instance.public_ip
-#   ]
-# }
