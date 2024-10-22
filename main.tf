@@ -1,70 +1,101 @@
-#Get the default VPC in eu-west-2
-data "aws_vpc" "default" {
-  default = true
-}
+# VPC
+resource "aws_vpc" "example_vpc" {
+  cidr_block = "10.0.0.0/16"
 
-#Get the subnets in the default VPC based on tag name = vpc-id
-data "aws_subnets" "mypubsub" {
-  filter {
-    name = "vpc-id"
-    values = [data.aws_vpc.default.id]
+  tags = {
+    Name = "example-vpc"
   }
 }
 
-#Get the first public subnet in the Default VPC for ASG
-# data "aws_subnets" "pub_sub_1" {
-#   id = data.aws_subnets.mypubsub.ids[0]
-# }
+# Subnet
+resource "aws_subnet" "example_subnet" {
+  vpc_id     = aws_vpc.example_vpc.id
+  cidr_block = "10.0.1.0/24"
 
-#Get the second public subnet in the Default VPC for ASG
-# data "aws_subnets" "pub_sub_2" {
-#   id = data.aws_subnets.mypubsub.ids[1]
-# }
+  tags = {
+    Name = "example-subnet"
+  }
+}
 
-#Create Launch Template for ASG
-resource "aws_launch_template" "tflaunchtemp" {
-  name_prefix = "terraform_template"
-  image_id = var.AMI["ubuntu22"]
-  instance_type = "t3.micro"
+# Security Group
+resource "aws_security_group" "example_sg" {
+  vpc_id = aws_vpc.example_vpc.id
+  name   = "example-sg"
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]  # Allow SSH access from anywhere
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "example-security-group"
+  }
+}
+
+# Launch Template
+resource "aws_launch_template" "example_lt" {
+  name_prefix   = "example-template"
+  image_id      = "ami-0c55b159cbfafe1f0"  # Amazon Linux 2 AMI (us-east-1)
+  instance_type = var.instance_type
+
   network_interfaces {
     associate_public_ip_address = true
-    security_groups = var.SGID
+    security_groups             = [aws_security_group.example_sg.id]
   }
-  block_device_mappings {
-    device_name = "/dev/sda1"
-    ebs {
-      volume_size = 8
-      delete_on_termination = true
+
+  tag_specifications {
+    resource_type = "instance"
+    tags = {
+      Name = "Terraform-ASG-Instance"
     }
   }
 }
 
-#Create the Auto Scaling Group
-resource "aws_autoscaling_group" "tf-asg" {
-  max_size = 2
-  min_size = 1
-  desired_capacity = 1
-  vpc_zone_identifier = [data.aws_subnets.mypubsub.ids[0], data.aws_subnets.mypubsub.ids[1]]
-  launch_template {
-    id = aws_launch_template.tflaunchtemp.id
-    version = "$Latest"
+# Auto Scaling Group
+resource "aws_autoscaling_group" "example_asg" {
+  desired_capacity     = var.desired_capacity
+  max_size             = var.max_size
+  min_size             = var.min_size
+  vpc_zone_identifier  = [aws_subnet.example_subnet.id]
 
+  launch_template {
+    id      = aws_launch_template.example_lt.id
+    version = "$Latest"
   }
+
   tag {
     key                 = "Name"
-    propagate_at_launch = false
-    value               = "TfASG"
+    value               = "Terraform-ASG-Instance"
+    propagate_at_launch = true
+  }
+
+  lifecycle {
+    create_before_destroy = true
   }
 }
 
-data "aws_autoscaling_group" "asgips" {
-  name = aws_autoscaling_group.tf-asg.name
+# Optional Scaling Policies (For dynamic scaling based on CloudWatch metrics)
+resource "aws_autoscaling_policy" "scale_out" {
+  name                   = "scale-out-policy"
+  scaling_adjustment      = 1
+  adjustment_type         = "ChangeInCapacity"
+  autoscaling_group_name  = aws_autoscaling_group.example_asg.id
+  cooldown                = 300
 }
 
-
-
-# output "instance_public_ips" {
-#   value = [
-#   for instance in data.aws_autoscaling_group.asgips.instances : instance.public_ip
-#   ]
-# }
+resource "aws_autoscaling_policy" "scale_in" {
+  name                   = "scale-in-policy"
+  scaling_adjustment      = -1
+  adjustment_type         = "ChangeInCapacity"
+  autoscaling_group_name  = aws_autoscaling_group.example_asg.id
+  cooldown                = 300
+}

@@ -1,24 +1,19 @@
-variable "REGION" {
-  default = "eu-west-2"
+# vars.tf
+
+variable "aws_region" {
+  description = "The AWS region to deploy resources in"
+  type        = string
+  default     = "eu-west-2"  # Change this to your preferred region
 }
 
-variable "ZONE1" {
-  default = "eu-west-2a"
+variable "ami_id" {
+  description = "The AMI ID for the EC2 instances"
+  type        = string
+  default     = "ami-0e8d228ad90af673b"  # Replace with a valid AMI ID for your region
 }
 
-variable "NAME" {
-  default = "tfasg"
-}
-variable "AMI" {
-  type = map(string)
-  default = {
-    ubuntu22 = "ami-03ceeb33c1e4abcd1"
-    linux = "ami-03c6b308140d10488"
-  }
-}
-
-variable "SGID" {
-  description = "Security group ID"
-  type = list(string)
-  default = ["sg-0761e67d589b6b1c5"]
+variable "vpc_subnet_id" {
+  description = "The VPC Subnet ID where the ASG will be deployed"
+  type        = string
+  default     = "subnet-xxxxxx"  # Replace with your subnet ID
 }
