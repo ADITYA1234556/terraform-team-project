@@ -17,7 +17,13 @@ output "subnet_id" {
   value       = aws_subnet.terraform_subnet.id
   description = "The ID of the Subnet created by this Terraform configuration"
 }
-
+output "subnet_id" {
+  value       = aws_subnet.terraform_subnet.id
+  description = "The ID of the Subnet created by this Terraform configuration"
+}output "subnet_id" {
+  value       = aws_subnet.terraform_subnet.id
+  description = "The ID of the Subnet created by this Terraform configuration"
+}
 output "subnet_id" {
   value       = aws_subnet.terraform_subnet.id
   description = "The ID of the Subnet created by this Terraform configuration"
