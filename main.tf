@@ -10,6 +10,22 @@ data "aws_subnets" "mypubsub" {
     values = [data.aws_vpc.default.id]
   }
 }
+#Get the first public subnet in the Default VPC for ASG
+# data "aws_subnets" "pub_sub_1" {
+#   id = data.aws_subnets.mypubsub.ids[0]
+# }
+#Get the first public subnet in the Default VPC for ASG
+# data "aws_subnets" "pub_sub_1" {
+#   id = data.aws_subnets.mypubsub.ids[0]
+# }
+#Get the first public subnet in the Default VPC for ASG
+# data "aws_subnets" "pub_sub_1" {
+#   id = data.aws_subnets.mypubsub.ids[0]
+# }
+#Get the first public subnet in the Default VPC for ASG
+# data "aws_subnets" "pub_sub_1" {
+#   id = data.aws_subnets.mypubsub.ids[0]
+# }
 
 #Get the first public subnet in the Default VPC for ASG
 # data "aws_subnets" "pub_sub_1" {
